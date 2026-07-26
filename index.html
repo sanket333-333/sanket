@@ -21,7 +21,22 @@
 }</style>
 <body>
 <script>
-    alert("👿click 'OK' If not:-Your phone will be formatted/data will be lost if you go back");
+    alert("Press Ok");
+</script>
+<div id="popup" style="background-color: rgb(226, 12, 45);">
+<h1> ⚠️ "Dont go back if you go your phone will lost it data"</h1>
+</div>
+
+<script>
+window.onload = function () {
+    const popup = document.getElementById("popup");
+    popup.style.display = "block";
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 60000);
+};
 </script>
 <pre id="terminal"></pre>
 
