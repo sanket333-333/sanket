@@ -1,135 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Security Terminal</title>
-    
+
+    <title>Camera Sharing Demo</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #111;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        video {
+            width: 95%;
+            max-width: 700px;
+            background: black;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #start {
+            background: green;
+            color: white;
+        }
+
+        #stop {
+            background: red;
+            color: white;
+        }
+
+        #status {
+            margin-top: 20px;
+            color: yellow;
+        }
+    </style>
 </head>
-<style>body{
-    margin:0;
-    background:#000;
-    color:#00ff00;
-    font-family:Consolas, monospace;
-    overflow:hidden;
-}
 
-#terminal{
-    padding:20px;
-    font-size:18px;
-    white-space:pre-wrap;
-}</style>
 <body>
-<script>
-    alert("Press Ok");
-</script>
-<div id="popup" style="background-color: rgb(226, 12, 45);">
-<h4> ⚠️ "Dont go back if you go your phone will lost it formatted/lost data"</h4>
-</div>
 
-<script>
-window.onload = function () {
-    const popup = document.getElementById("popup");
-    popup.style.display = "block";
+    <h1>📹 Camera Sharing Demo</h1>
 
-    // Hide after 5 seconds
-    setTimeout(() => {
-        popup.style.display = "none";
-    }, 60000);
-};
-</script>
-<pre id="terminal"></pre>
+    <p>
+        This page will ask for camera permission.
+        Camera sharing only starts after you approve it.
+    </p>
 
-<script>const terminal = document.getElementById("terminal");
+    <button id="start">Start Camera</button>
+    <button id="stop">Stop Camera</button>
 
-function wait(ms){
-    return new Promise(resolve=>setTimeout(resolve,ms));
-}
+    <p id="status">Not connected</p>
 
-function randomIP(){
-    return `${Math.floor(Math.random()*245+10)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254+1)}`;
-}
+    <video id="localVideo" autoplay muted playsinline></video>
 
-async function type(text,color="#00ff00",speed=25){
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-    terminal.innerHTML += `<span style="color:${color}"></span>`;
+    <script>
 
-    const span=terminal.lastChild;
+        const socket = io();
 
-    for(let ch of text){
-        span.innerHTML+=ch;
-        await wait(speed);
-    }
+        let localStream;
+        let peerConnection;
 
-    terminal.innerHTML+="<br>";
-    window.scrollTo(0,document.body.scrollHeight);
-}
-async function progress(task,time){
+        const localVideo = document.getElementById("localVideo");
+        const statusText = document.getElementById("status");
 
-    await type(task,"cyan",15);
-
-    for(let i=0;i<=100;i++){
-
-        let filled=Math.floor(i/2);
-
-        let empty=50-filled;
-
-        terminal.innerHTML=
-        terminal.innerHTML.replace(/<div id="bar">.*?<\/div>/,"");
-
-        terminal.innerHTML+=`<div id="bar">[${"█".repeat(filled)}${"░".repeat(empty)}] ${i}%</div>`;
-
-        await wait(time*10);
-    }
-
-    terminal.innerHTML+="<br>";
-}
-
-async function run(){
-
-terminal.innerHTML="";
+        const configuration = {
+            iceServers: [
+                {
+                    urls: "stun:stun.l.google.com:19302"
+                }
+            ]
+        };
 
 
+        function createPeerConnection() {
+
+            peerConnection = new RTCPeerConnection(configuration);
+
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+
+            peerConnection.onicecandidate = event => {
+
+                if (event.candidate) {
+
+                    socket.emit("ice-candidate", {
+                        candidate: event.candidate
+                    });
+
+                }
+
+            };
+
+            peerConnection.ontrack = event => {
+
+                let remoteVideo = document.getElementById("remoteVideo");
+
+                if (!remoteVideo) {
+
+                    remoteVideo = document.createElement("video");
+
+                    remoteVideo.id = "remoteVideo";
+                    remoteVideo.autoplay = true;
+                    remoteVideo.playsInline = true;
+
+                    document.body.appendChild(remoteVideo);
+
+                }
+
+                remoteVideo.srcObject = event.streams[0];
+
+            };
+
+        }
 
 
+        document.getElementById("start").onclick = async () => {
 
-await type("⚠ SYSTEM COMPROMISED ⚠","red",40);
+            try {
 
-await wait(1000);
+                localStream = await navigator.mediaDevices.getUserMedia({
 
-await type("Downloading personal data...","red");
+                    video: true,
+                    audio: true
 
-await progress("Downloading...",40);
+                });
 
-await type("Sending data to remote server...","red");
+                localVideo.srcObject = localStream;
 
-await progress("Uploading...",40);
+                statusText.innerText =
+                    "Camera permission granted. Connecting...";
 
-terminal.innerHTML="";
+                createPeerConnection();
 
-await type("CRITICAL SYSTEM WARNING","red",50);
+                socket.emit("join");
 
-for(let i=3;i>=1;i--){
+            }
 
-await type("SYSTEM SHUTDOWN IN "+i,"yellow",80);
+            catch (error) {
 
-await wait(1000);
+                console.error(error);
 
-}
+                statusText.innerText =
+                    "Camera permission was denied.";
 
-terminal.innerHTML="";
+            }
 
-await type("😂 kya re lode! 😂","lime",60);
+        };
 
-await type("🤣🤣🫵","lime",50);
 
-await type("Nothing was hacked or deleted.","white",40);
+        document.getElementById("stop").onclick = () => {
 
-await type("Your computer is completely safe 😎","cyan",40);
+            if (localStream) {
 
-}
+                localStream.getTracks().forEach(track => {
+                    track.stop();
+                });
 
-run();</script>
+            }
+
+            if (peerConnection) {
+                peerConnection.close();
+            }
+
+            localVideo.srcObject = null;
+
+            statusText.innerText =
+                "Camera sharing stopped.";
+
+        };
+
+
+        socket.on("peer-joined", async () => {
+
+            const offer = await peerConnection.createOffer();
+
+            await peerConnection.setLocalDescription(offer);
+
+            socket.emit("offer", {
+                offer: offer
+            });
+
+        });
+
+
+        socket.on("offer", async data => {
+
+            if (!peerConnection) {
+                createPeerConnection();
+            }
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(data.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("answer", {
+                answer: answer
+            });
+
+        });
+
+
+        socket.on("answer", async data => {
+
+            await peerConnection.setRemoteDescription(
+
+                new RTCSessionDescription(data.answer)
+
+            );
+
+        });
+
+
+        socket.on("ice-candidate", async data => {
+
+            try {
+
+                await peerConnection.addIceCandidate(
+
+                    new RTCIceCandidate(data.candidate)
+
+                );
+
+            }
+
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+        });
+
+    </script>
 
 </body>
 </html>
