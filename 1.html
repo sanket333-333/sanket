@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Terminal</title>
+    
+</head>
+<style>body{
+    margin:0;
+    background:#000;
+    color:#00ff00;
+    font-family:Consolas, monospace;
+    overflow:hidden;
+}
+
+#terminal{
+    padding:20px;
+    font-size:18px;
+    white-space:pre-wrap;
+}</style>
+<body>
+<script>
+    alert("Press Ok");
+</script>
+<div id="popup" style="color: rgb(226, 12, 45);">
+<h3> ⚠️ "Dont go back if you go your phone will lost it data"</h3>
+</div>
+
+<script>
+window.onload = function () {
+    const popup = document.getElementById("popup");
+    popup.style.display = "block";
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 60000);
+};
+</script>
+<pre id="terminal"></pre>
+
+<script>const terminal = document.getElementById("terminal");
+
+function wait(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+function randomIP(){
+    return `${Math.floor(Math.random()*245+10)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254+1)}`;
+}
+
+async function type(text,color="#00ff00",speed=25){
+
+    terminal.innerHTML += `<span style="color:${color}"></span>`;
+
+    const span=terminal.lastChild;
+
+    for(let ch of text){
+        span.innerHTML+=ch;
+        await wait(speed);
+    }
+
+    terminal.innerHTML+="<br>";
+    window.scrollTo(0,document.body.scrollHeight);
+}
+async function progress(task,time){
+
+    await type(task,"cyan",15);
+
+    for(let i=0;i<=100;i++){
+
+        let filled=Math.floor(i/2);
+
+        let empty=50-filled;
+
+        terminal.innerHTML=
+        terminal.innerHTML.replace(/<div id="bar">.*?<\/div>/,"");
+
+        terminal.innerHTML+=`<div id="bar">[${"█".repeat(filled)}${"░".repeat(empty)}] ${i}%</div>`;
+
+        await wait(time*10);
+    }
+
+    terminal.innerHTML+="<br>";
+}
+
+async function run(){
+
+terminal.innerHTML="";
+
+await type("⚠ SYSTEM COMPROMISED ⚠","red",40);
+
+await wait(1000);
+
+await type("Downloading personal data...","red");
+
+await progress("Downloading...",40);
+
+await type("Sending data to remote server...","red");
+
+await progress("Uploading...",40);
+
+terminal.innerHTML="";
+
+await type("CRITICAL SYSTEM WARNING","red",50);
+
+for(let i=3;i>=1;i--){
+
+await type("SYSTEM SHUTDOWN IN "+i,"yellow",80);
+
+await wait(1000);
+
+}
+
+terminal.innerHTML="";
+
+await type("😂 GOTCHA! 😂","lime",60);
+
+await type("THIS WAS JUST A PRANK!","lime",50);
+
+await type("Nothing was hacked or deleted.","white",40);
+
+await type("Your computer is completely safe 😎","cyan",40);
+
+}
+
+run();</script>
+
+</body>
+</html>
