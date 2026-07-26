@@ -1,176 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>System Diagnostic</title>
-
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: #050505;
-    color: #00ff66;
-    font-family: monospace;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-#terminal {
-    max-width: 700px;
-    margin: auto;
-}
-
-h1 {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 30px;
-}
-
-.progress-box {
-    border: 1px solid #00ff66;
-    height: 25px;
-    margin-bottom: 20px;
-}
-
-#progress {
-    height: 100%;
-    width: 0%;
-    background: #00ff66;
-    transition: width 0.3s;
-}
-
-.line {
-    margin: 15px 0;
-    font-size: 15px;
-}
-
-.warning {
-    color: #ffcc00;
-}
-
-.red {
-    color: red;
-}
-
-#prank {
-    display: none;
-    text-align: center;
-    padding: 30px;
-}
-
-button {
-    background: #00ff66;
-    border: none;
-    padding: 14px 25px;
-    font-size: 16px;
-    cursor: pointer;
-    font-family: monospace;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Terminal</title>
+    
 </head>
+<style>body{
+    margin:0;
+    background:#000;
+    color:#00ff00;
+    font-family:Consolas, monospace;
+    overflow:hidden;
+}
 
+#terminal{
+    padding:20px;
+    font-size:18px;
+    white-space:pre-wrap;
+}</style>
 <body>
 <script>
-    alert("Don't Go Back(Your phone will be formatted/data will be lost if you go back)");
+    alert("👿click 'OK' If not:-Your phone will be formatted/data will be lost if you go back");
 </script>
-<div id="terminal">
+<pre id="terminal"></pre>
 
-    <h1>⚠ SYSTEM DIAGNOSTIC TERMINAL ⚠</h1>
+<script>const terminal = document.getElementById("terminal");
 
-    <div class="progress-box">
-        <div id="progress"></div>
-    </div>
-
-    <div id="messages"></div>
-
-</div>
-
-<div id="prank">
-
-    <h1>😂 GOTCHA! 😂</h1>
-
-    <h2>This was just a prank!</h2>
-
-    <p>No files were accessed.</p>
-    <p>No data was deleted.</p>
-    <p>Your phone is completely safe.</p>
-
-    <br>
-
-    <button onclick="location.reload()">
-        Run Again
-    </button>
-
-</div>
-
-<script>
-
-const messages = [
-    "Initializing system diagnostic...",
-    "Connecting to secure terminal...",
-    "Scanning device information...",
-    "Checking system status...",
-    "Analyzing network connection...",
-    "Running security simulation...",
-    "Simulation almost complete..."
-];
-
-let i = 0;
-let progress = 0;
-
-function addMessage(text, className = "") {
-
-    const message = document.createElement("div");
-
-    message.className = "line " + className;
-
-    message.textContent = "> " + text;
-
-    document.getElementById("messages").appendChild(message);
+function wait(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
-function runPrank() {
+function randomIP(){
+    return `${Math.floor(Math.random()*245+10)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254+1)}`;
+}
 
-    if (i < messages.length) {
+async function type(text,color="#00ff00",speed=25){
 
-        addMessage(messages[i]);
+    terminal.innerHTML += `<span style="color:${color}"></span>`;
 
-        i++;
+    const span=terminal.lastChild;
 
-        progress += 14;
-
-        document.getElementById("progress").style.width =
-            progress + "%";
-
-        setTimeout(runPrank, 1200);
-
-    } else {
-
-        addMessage(
-            "⚠ SIMULATION COMPLETE",
-            "warning"
-        );
-
-        setTimeout(() => {
-
-            document.getElementById("terminal").style.display =
-                "none";
-
-            document.getElementById("prank").style.display =
-                "block";
-
-        }, 2000);
+    for(let ch of text){
+        span.innerHTML+=ch;
+        await wait(speed);
     }
+
+    terminal.innerHTML+="<br>";
+    window.scrollTo(0,document.body.scrollHeight);
+}
+async function progress(task,time){
+
+    await type(task,"cyan",15);
+
+    for(let i=0;i<=100;i++){
+
+        let filled=Math.floor(i/2);
+
+        let empty=50-filled;
+
+        terminal.innerHTML=
+        terminal.innerHTML.replace(/<div id="bar">.*?<\/div>/,"");
+
+        terminal.innerHTML+=`<div id="bar">[${"█".repeat(filled)}${"░".repeat(empty)}] ${i}%</div>`;
+
+        await wait(time*10);
+    }
+
+    terminal.innerHTML+="<br>";
 }
 
-runPrank();
+async function run(){
 
-</script>
+terminal.innerHTML="";
+
+await type("====================================","#00ff00");
+await type("      CYBER SECURITY TERMINAL","#00ff00");
+await type("====================================","#00ff00");
+
+await wait(800);
+
+await type("[+] Initializing neural network...","cyan");
+
+await type("[+] Connection established.","lime");
+
+await progress("Scanning target system...",30);
+
+await type("[+] Target IP: "+randomIP(),"yellow");
+
+await progress("Scanning system files...",30);
+
+await type("[+] 1247 files detected.","lime");
+
+await progress("Analyzing security...",30);
+
+await type("[!] Security vulnerability detected!","orange");
+
+await type("[+] Cracking encrypted password...","cyan");
+
+for(let i=0;i<4;i++){
+
+await type("[+] Attempting ********","lime");
+
+}
+
+await progress("Decrypting security layer...",40);
+
+terminal.innerHTML="";
+
+await type("⚠ SYSTEM COMPROMISED ⚠","red",40);
+
+await wait(1000);
+
+await type("Downloading personal data...","red");
+
+await progress("Downloading...",40);
+
+await type("Sending data to remote server...","red");
+
+await progress("Uploading...",40);
+
+terminal.innerHTML="";
+
+await type("CRITICAL SYSTEM WARNING","red",50);
+
+for(let i=3;i>=1;i--){
+
+await type("SYSTEM SHUTDOWN IN "+i,"yellow",80);
+
+await wait(1000);
+
+}
+
+terminal.innerHTML="";
+
+await type("😂 GOTCHA! 😂","lime",60);
+
+await type("THIS WAS JUST A PRANK!","lime",50);
+
+await type("Nothing was hacked or deleted.","white",40);
+
+await type("Your computer is completely safe 😎","cyan",40);
+
+}
+
+run();</script>
 
 </body>
 </html>
