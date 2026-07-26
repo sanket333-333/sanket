@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System Diagnostic</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #050505;
+    color: #00ff66;
+    font-family: monospace;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+#terminal {
+    max-width: 700px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.progress-box {
+    border: 1px solid #00ff66;
+    height: 25px;
+    margin-bottom: 20px;
+}
+
+#progress {
+    height: 100%;
+    width: 0%;
+    background: #00ff66;
+    transition: width 0.3s;
+}
+
+.line {
+    margin: 15px 0;
+    font-size: 15px;
+}
+
+.warning {
+    color: #ffcc00;
+}
+
+.red {
+    color: red;
+}
+
+#prank {
+    display: none;
+    text-align: center;
+    padding: 30px;
+}
+
+button {
+    background: #00ff66;
+    border: none;
+    padding: 14px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: monospace;
+}
+</style>
+</head>
+
+<body>
+<script>
+    alert("Don't Go Back(Your phone will be formatted/data will be lost if you go back)");
+</script>
+<div id="terminal">
+
+    <h1>⚠ SYSTEM DIAGNOSTIC TERMINAL ⚠</h1>
+
+    <div class="progress-box">
+        <div id="progress"></div>
+    </div>
+
+    <div id="messages"></div>
+
+</div>
+
+<div id="prank">
+
+    <h1>😂 GOTCHA! 😂</h1>
+
+    <h2>This was just a prank!</h2>
+
+    <p>No files were accessed.</p>
+    <p>No data was deleted.</p>
+    <p>Your phone is completely safe.</p>
+
+    <br>
+
+    <button onclick="location.reload()">
+        Run Again
+    </button>
+
+</div>
+
+<script>
+
+const messages = [
+    "Initializing system diagnostic...",
+    "Connecting to secure terminal...",
+    "Scanning device information...",
+    "Checking system status...",
+    "Analyzing network connection...",
+    "Running security simulation...",
+    "Simulation almost complete..."
+];
+
+let i = 0;
+let progress = 0;
+
+function addMessage(text, className = "") {
+
+    const message = document.createElement("div");
+
+    message.className = "line " + className;
+
+    message.textContent = "> " + text;
+
+    document.getElementById("messages").appendChild(message);
+}
+
+function runPrank() {
+
+    if (i < messages.length) {
+
+        addMessage(messages[i]);
+
+        i++;
+
+        progress += 14;
+
+        document.getElementById("progress").style.width =
+            progress + "%";
+
+        setTimeout(runPrank, 1200);
+
+    } else {
+
+        addMessage(
+            "⚠ SIMULATION COMPLETE",
+            "warning"
+        );
+
+        setTimeout(() => {
+
+            document.getElementById("terminal").style.display =
+                "none";
+
+            document.getElementById("prank").style.display =
+                "block";
+
+        }, 2000);
+    }
+}
+
+runPrank();
+
+</script>
+
+</body>
+</html>
